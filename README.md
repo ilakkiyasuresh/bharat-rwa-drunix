@@ -2,8 +2,6 @@
 
 **Tokenised Indian real assets on Drunix, with a bank as depositary.**
 
-Drunix Hackathon in collaboration with Citi · CHL-7007
-
 ---
 
 ## The claim
