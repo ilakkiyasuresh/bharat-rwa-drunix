@@ -1,0 +1,228 @@
+# Channel configuration for the Bharat RWA network on Drunix.
+#
+# Drunix is an enhanced fork of Hyperledger Fabric v2.5.x and keeps the Fabric
+# channel configuration format, so this is an ordinary configtx.yaml. What
+# differs is the peer topology it serves: Drunix splits the peer role into Lite
+# Peers that endorse and Committing Peers that commit, so an organisation's
+# anchor peers below are Lite Peers for the endorsing-only members and
+# Committing Peers for the members that hold the record.
+#
+# Three channels rather than one per asset. Fabric channel configuration is
+# heavyweight, and a channel per asset would make onboarding an asset a
+# governance event rather than an operation.
+
+Organizations:
+  - &CitiDepositary
+    Name: CitiDepositaryMSP
+    ID: CitiDepositaryMSP
+    MSPDir: ../crypto-config/peerOrganizations/depositary.bharatrwa.in/msp
+    Policies:
+      Readers: { Type: Signature, Rule: "OR('CitiDepositaryMSP.member')" }
+      Writers: { Type: Signature, Rule: "OR('CitiDepositaryMSP.member')" }
+      Admins:  { Type: Signature, Rule: "OR('CitiDepositaryMSP.admin')" }
+      Endorsement: { Type: Signature, Rule: "OR('CitiDepositaryMSP.peer')" }
+    AnchorPeers:
+      # Committing Peer: holds the golden state in YugabyteDB.
+      - Host: cp0.depositary.bharatrwa.in
+        Port: 7051
+
+  - &Registrar
+    Name: RegistrarMSP
+    ID: RegistrarMSP
+    MSPDir: ../crypto-config/peerOrganizations/rta.bharatrwa.in/msp
+    Policies:
+      Readers: { Type: Signature, Rule: "OR('RegistrarMSP.member')" }
+      Writers: { Type: Signature, Rule: "OR('RegistrarMSP.member')" }
+      Admins:  { Type: Signature, Rule: "OR('RegistrarMSP.admin')" }
+      Endorsement: { Type: Signature, Rule: "OR('RegistrarMSP.peer')" }
+    AnchorPeers:
+      # The statutory register of members lives here. The ledger mirrors it.
+      - Host: cp0.rta.bharatrwa.in
+        Port: 8051
+
+  - &Trustee
+    Name: TrusteeMSP
+    ID: TrusteeMSP
+    MSPDir: ../crypto-config/peerOrganizations/trustee.bharatrwa.in/msp
+    Policies:
+      Readers: { Type: Signature, Rule: "OR('TrusteeMSP.member')" }
+      Writers: { Type: Signature, Rule: "OR('TrusteeMSP.member')" }
+      Admins:  { Type: Signature, Rule: "OR('TrusteeMSP.admin')" }
+      Endorsement: { Type: Signature, Rule: "OR('TrusteeMSP.peer')" }
+    AnchorPeers:
+      - Host: cp0.trustee.bharatrwa.in
+        Port: 9051
+
+  - &Compliance
+    Name: ComplianceMSP
+    ID: ComplianceMSP
+    MSPDir: ../crypto-config/peerOrganizations/compliance.bharatrwa.in/msp
+    Policies:
+      Readers: { Type: Signature, Rule: "OR('ComplianceMSP.member')" }
+      Writers: { Type: Signature, Rule: "OR('ComplianceMSP.member')" }
+      Admins:  { Type: Signature, Rule: "OR('ComplianceMSP.admin')" }
+      Endorsement: { Type: Signature, Rule: "OR('ComplianceMSP.peer')" }
+    AnchorPeers:
+      # Lite Peer. Endorses transfers and commits nothing, which is exactly
+      # what the Drunix LP/CP split is for: this organisation needs to run the
+      # compliance evaluation, not to carry a copy of the state database.
+      - Host: lp0.compliance.bharatrwa.in
+        Port: 10051
+
+  - &SponsorAlpha
+    Name: SponsorAlphaMSP
+    ID: SponsorAlphaMSP
+    MSPDir: ../crypto-config/peerOrganizations/sponsor-alpha.bharatrwa.in/msp
+    Policies:
+      Readers: { Type: Signature, Rule: "OR('SponsorAlphaMSP.member')" }
+      Writers: { Type: Signature, Rule: "OR('SponsorAlphaMSP.member')" }
+      Admins:  { Type: Signature, Rule: "OR('SponsorAlphaMSP.admin')" }
+      Endorsement: { Type: Signature, Rule: "OR('SponsorAlphaMSP.peer')" }
+    AnchorPeers:
+      # Lite Peer. Endorses its own issuances only.
+      - Host: lp0.sponsor-alpha.bharatrwa.in
+        Port: 11051
+
+  - &Valuer
+    Name: ValuerMSP
+    ID: ValuerMSP
+    MSPDir: ../crypto-config/peerOrganizations/valuer.bharatrwa.in/msp
+    Policies:
+      Readers: { Type: Signature, Rule: "OR('ValuerMSP.member')" }
+      Writers: { Type: Signature, Rule: "OR('ValuerMSP.member')" }
+      Admins:  { Type: Signature, Rule: "OR('ValuerMSP.admin')" }
+      Endorsement: { Type: Signature, Rule: "OR('ValuerMSP.peer')" }
+    AnchorPeers:
+      - Host: lp0.valuer.bharatrwa.in
+        Port: 12051
+
+  - &Regulator
+    Name: RegulatorMSP
+    ID: RegulatorMSP
+    MSPDir: ../crypto-config/peerOrganizations/regulator.bharatrwa.in/msp
+    Policies:
+      Readers: { Type: Signature, Rule: "OR('RegulatorMSP.member')" }
+      # The supervisor writes nothing. Its node reads every channel and
+      # endorses nothing, which makes continuous supervision possible without
+      # giving the supervisor the ability to move anyone's property.
+      Writers: { Type: Signature, Rule: "OR('RegulatorMSP.admin')" }
+      Admins:  { Type: Signature, Rule: "OR('RegulatorMSP.admin')" }
+    AnchorPeers:
+      - Host: observer0.regulator.bharatrwa.in
+        Port: 13051
+
+  - &Orderer
+    Name: OrdererMSP
+    ID: OrdererMSP
+    MSPDir: ../crypto-config/ordererOrganizations/bharatrwa.in/msp
+    Policies:
+      Readers: { Type: Signature, Rule: "OR('OrdererMSP.member')" }
+      Writers: { Type: Signature, Rule: "OR('OrdererMSP.member')" }
+      Admins:  { Type: Signature, Rule: "OR('OrdererMSP.admin')" }
+
+Capabilities:
+  Channel: &ChannelCapabilities
+    V2_0: true
+  Orderer: &OrdererCapabilities
+    V2_0: true
+  Application: &ApplicationCapabilities
+    V2_5: true
+
+Application: &ApplicationDefaults
+  Organizations:
+  Policies:
+    Readers:     { Type: ImplicitMeta, Rule: "ANY Readers" }
+    Writers:     { Type: ImplicitMeta, Rule: "ANY Writers" }
+    # Channel configuration changes need a majority of admins, so no single
+    # organisation can rewrite the rules of the network it is a member of.
+    Admins:      { Type: ImplicitMeta, Rule: "MAJORITY Admins" }
+    LifecycleEndorsement: { Type: ImplicitMeta, Rule: "MAJORITY Endorsement" }
+    Endorsement:          { Type: ImplicitMeta, Rule: "MAJORITY Endorsement" }
+  Capabilities:
+    <<: *ApplicationCapabilities
+
+Orderer: &OrdererDefaults
+  OrdererType: etcdraft
+  # Five orderers across three organisations. Two at the depositary, two at
+  # the registrar, one at the trustee: no organisation holds a majority, and
+  # the network survives the loss of any two nodes.
+  EtcdRaft:
+    Consenters:
+      - Host: orderer0.depositary.bharatrwa.in
+        Port: 7050
+        ClientTLSCert: ../crypto-config/ordererOrganizations/bharatrwa.in/orderers/orderer0/tls/server.crt
+        ServerTLSCert: ../crypto-config/ordererOrganizations/bharatrwa.in/orderers/orderer0/tls/server.crt
+      - Host: orderer1.depositary.bharatrwa.in
+        Port: 7150
+        ClientTLSCert: ../crypto-config/ordererOrganizations/bharatrwa.in/orderers/orderer1/tls/server.crt
+        ServerTLSCert: ../crypto-config/ordererOrganizations/bharatrwa.in/orderers/orderer1/tls/server.crt
+      - Host: orderer2.rta.bharatrwa.in
+        Port: 7250
+        ClientTLSCert: ../crypto-config/ordererOrganizations/bharatrwa.in/orderers/orderer2/tls/server.crt
+        ServerTLSCert: ../crypto-config/ordererOrganizations/bharatrwa.in/orderers/orderer2/tls/server.crt
+      - Host: orderer3.rta.bharatrwa.in
+        Port: 7350
+        ClientTLSCert: ../crypto-config/ordererOrganizations/bharatrwa.in/orderers/orderer3/tls/server.crt
+        ServerTLSCert: ../crypto-config/ordererOrganizations/bharatrwa.in/orderers/orderer3/tls/server.crt
+      - Host: orderer4.trustee.bharatrwa.in
+        Port: 7450
+        ClientTLSCert: ../crypto-config/ordererOrganizations/bharatrwa.in/orderers/orderer4/tls/server.crt
+        ServerTLSCert: ../crypto-config/ordererOrganizations/bharatrwa.in/orderers/orderer4/tls/server.crt
+  BatchTimeout: 2s
+  BatchSize:
+    MaxMessageCount: 500
+    AbsoluteMaxBytes: 10 MB
+    PreferredMaxBytes: 2 MB
+  Organizations:
+  Policies:
+    Readers:            { Type: ImplicitMeta, Rule: "ANY Readers" }
+    Writers:            { Type: ImplicitMeta, Rule: "ANY Writers" }
+    Admins:             { Type: ImplicitMeta, Rule: "MAJORITY Admins" }
+    BlockValidation:    { Type: ImplicitMeta, Rule: "ANY Writers" }
+  Capabilities:
+    <<: *OrdererCapabilities
+
+Channel: &ChannelDefaults
+  Policies:
+    Readers: { Type: ImplicitMeta, Rule: "ANY Readers" }
+    Writers: { Type: ImplicitMeta, Rule: "ANY Writers" }
+    Admins:  { Type: ImplicitMeta, Rule: "MAJORITY Admins" }
+  Capabilities:
+    <<: *ChannelCapabilities
+
+Profiles:
+  # Network-wide. Investor eligibility attestations as hashes, sanctions
+  # status, asset master records, valuation attestations. Every organisation
+  # is a member because eligibility must be checkable by every endorser.
+  RegistryChannel:
+    <<: *ChannelDefaults
+    Orderer:
+      <<: *OrdererDefaults
+      Organizations: [*Orderer]
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        [*CitiDepositary, *Registrar, *Trustee, *Compliance, *SponsorAlpha, *Valuer, *Regulator]
+
+  # One per asset class. Receipt supply, holdings, transfers, distributions.
+  # The valuer is not a member: a valuer needs to publish a NAV, not to see
+  # the holder book.
+  IssuanceChannelCRE:
+    <<: *ChannelDefaults
+    Orderer:
+      <<: *OrdererDefaults
+      Organizations: [*Orderer]
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        [*CitiDepositary, *Registrar, *Trustee, *Compliance, *SponsorAlpha, *Regulator]
+
+  # Privileged actions, corporate actions, audit events. Deliberately narrow.
+  OpsChannel:
+    <<: *ChannelDefaults
+    Orderer:
+      <<: *OrdererDefaults
+      Organizations: [*Orderer]
+    Application:
+      <<: *ApplicationDefaults
+      Organizations: [*CitiDepositary, *Registrar, *Trustee, *Regulator]

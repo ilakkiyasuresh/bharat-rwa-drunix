@@ -1,0 +1,38 @@
+[
+  {
+    "name": "collectionHolders",
+    "comment": "Holder-level detail: which investor holds which lots, at what cost basis, and the computed distribution workings. A distribution partner has no business seeing another partner's book, so this never goes in world state. Drunix's shared transient store is what makes disseminating this to a wide membership affordable; on stock Fabric the gossip call volume grows with every member added.",
+    "policy": "OR('CitiDepositaryMSP.member','RegistrarMSP.member','TrusteeMSP.member','RegulatorMSP.member')",
+    "requiredPeerCount": 2,
+    "maxPeerCount": 4,
+    "blockToLive": 0,
+    "memberOnlyRead": true,
+    "memberOnlyWrite": false,
+    "endorsementPolicy": {
+      "signaturePolicy": "AND('CitiDepositaryMSP.member','RegistrarMSP.member')"
+    }
+  },
+  {
+    "name": "collectionSponsorAlpha",
+    "comment": "Per-sponsor collection. A sponsor sees the book for its own schemes and nothing else. One collection per sponsor rather than one per asset: Fabric collection definitions are channel configuration, and a definition per asset would make onboarding an asset a governance event.",
+    "policy": "OR('CitiDepositaryMSP.member','RegistrarMSP.member','TrusteeMSP.member','RegulatorMSP.member','SponsorAlphaMSP.member')",
+    "requiredPeerCount": 2,
+    "maxPeerCount": 5,
+    "blockToLive": 0,
+    "memberOnlyRead": true,
+    "memberOnlyWrite": false,
+    "endorsementPolicy": {
+      "signaturePolicy": "AND('CitiDepositaryMSP.member','RegistrarMSP.member')"
+    }
+  },
+  {
+    "name": "collectionDistributionWorkings",
+    "comment": "The arithmetic behind every payment: weighted unit-days, gross, withholding and net per holder. Retained because 'why is my payment this number' must have an answer that does not depend on rerunning the job. blockToLive is 0 (never purged) because this is tax-relevant and the retention obligation outlives any convenience.",
+    "policy": "OR('CitiDepositaryMSP.member','RegistrarMSP.member','RegulatorMSP.member')",
+    "requiredPeerCount": 2,
+    "maxPeerCount": 3,
+    "blockToLive": 0,
+    "memberOnlyRead": true,
+    "memberOnlyWrite": false
+  }
+]

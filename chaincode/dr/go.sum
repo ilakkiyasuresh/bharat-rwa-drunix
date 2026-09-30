@@ -1,0 +1,4 @@
+github.com/hyperledger/fabric-chaincode-go/v2 v2.3.0 h1:NB/QO2t4R5f6Nz/oREqZeaE4splHI2U9gqndfEQZreo=
+github.com/hyperledger/fabric-chaincode-go/v2 v2.3.0/go.mod h1:c3zA3gOL/V53a0v1TGgHe8nifeH6daG/UrmJs79I9pI=
+github.com/hyperledger/fabric-contract-api-go/v2 v2.0.0 h1:IDiCGVOBlRd6zpL0Y+f6V7IpBqa4/Z5JAK9SF7a5ea8=
+github.com/hyperledger/fabric-contract-api-go/v2 v2.0.0/go.mod h1:pdqhe7ALf4lmXgQdprCyNWYdnCPxgj02Vhf8JF5w8po=
