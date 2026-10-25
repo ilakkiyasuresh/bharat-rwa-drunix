@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Bharat RWA — live demo</title>
+<style>
+  :root {
+    --indigo: #4f46e5; --indigo-soft: #eef2ff; --violet: #7c3aed;
+    --saffron: #f97316; --saffron-soft: #fff1e6;
+    --green: #059669; --green-soft: #d1fae5; --green-ink: #065f46;
+    --rose: #e11d48; --rose-soft: #ffe4e9; --rose-ink: #9f1239;
+    --amber-soft: #fef3c7; --amber-ink: #92400e;
+    --ink: #1e1b4b; --muted: #6b7280; --line: #e5e7f0; --card: #ffffff;
+    --shadow: 0 10px 30px rgba(79, 70, 229, .10), 0 2px 6px rgba(30, 27, 75, .06);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; color: var(--ink);
+    font-family: "Segoe UI", Calibri, Arial, sans-serif; line-height: 1.5;
+    background:
+      radial-gradient(900px 500px at 8% -5%, #ffe8d1 0%, rgba(255,232,209,0) 60%),
+      radial-gradient(900px 560px at 100% 0%, #dfe6ff 0%, rgba(223,230,255,0) 60%),
+      radial-gradient(800px 500px at 50% 100%, #d9f7ea 0%, rgba(217,247,234,0) 60%),
+      #f8faff;
+    background-attachment: fixed;
+  }
+  main { max-width: 1040px; margin: 0 auto; padding: 28px 20px 70px; }
+
+  .hero {
+    background: linear-gradient(135deg, #ffffff 0%, #f5f3ff 55%, #fff4ea 100%);
+    border: 1px solid #ece9ff; border-radius: 28px; padding: 38px 40px;
+    box-shadow: var(--shadow);
+  }
+  .kicker {
+    display: inline-block; background: var(--saffron-soft); color: #c2410c;
+    border-radius: 999px; padding: 5px 14px; font-size: 12px; font-weight: 700;
+    letter-spacing: .08em; text-transform: uppercase;
+  }
+  h1 {
+    margin: 14px 0 6px; font-size: 54px; line-height: 1.05; font-weight: 800; letter-spacing: -.02em;
+    background: linear-gradient(90deg, var(--indigo) 0%, var(--violet) 45%, var(--saffron) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .tag { margin: 0 0 6px; font-size: 20px; font-weight: 600; max-width: 760px; }
+  .tag b { color: var(--rose); }
+  .sub { margin: 0 0 24px; color: var(--muted); font-size: 15px; max-width: 760px; }
+  .cta { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+  button {
+    border: 0; cursor: pointer; color: #fff; font-size: 16px; font-weight: 700;
+    padding: 14px 28px; border-radius: 999px;
+    background: linear-gradient(90deg, var(--indigo), var(--violet));
+    box-shadow: 0 10px 22px rgba(79, 70, 229, .35); transition: transform .15s, box-shadow .15s;
+  }
+  button:hover { transform: translateY(-2px); box-shadow: 0 14px 26px rgba(79, 70, 229, .42); }
+  button:disabled { opacity: .7; cursor: wait; transform: none; }
+  .hint { color: var(--muted); font-size: 13px; }
+
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 22px 0 8px; }
+  .stat { border-radius: 20px; padding: 20px 22px; box-shadow: var(--shadow); background: var(--card); border: 1px solid var(--line); }
+  .stat .num { font-size: 44px; font-weight: 800; line-height: 1; letter-spacing: -.02em; }
+  .stat .lbl { margin-top: 6px; font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+  .stat.s-rose { background: var(--rose-soft); border-color: #ffc9d3; }
+  .stat.s-rose .num, .stat.s-rose .lbl { color: var(--rose-ink); }
+  .stat.s-green { background: var(--green-soft); border-color: #a7f0d1; }
+  .stat.s-green .num, .stat.s-green .lbl { color: var(--green-ink); }
+  .stat.s-indigo { background: var(--indigo-soft); border-color: #d6dcff; }
+  .stat.s-indigo .num, .stat.s-indigo .lbl { color: #3730a3; }
+  .stat.s-saffron { background: var(--saffron-soft); border-color: #ffd9b8; }
+  .stat.s-saffron .num, .stat.s-saffron .lbl { color: #c2410c; }
+
+  .nav {
+    position: sticky; top: 0; z-index: 5; margin: 18px -8px 8px; padding: 12px 8px;
+    background: rgba(248, 250, 255, .88); backdrop-filter: blur(8px);
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  }
+  .nav .navlbl { font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; margin-right: 4px; }
+  .pill {
+    text-decoration: none; font-size: 13px; font-weight: 700; color: #3730a3;
+    background: var(--indigo-soft); border: 1px solid #d6dcff; border-radius: 999px; padding: 5px 11px;
+  }
+  .pill:hover { background: #e0e7ff; }
+  .pill.red { color: var(--rose-ink); background: var(--rose-soft); border-color: #ffc9d3; }
+  .pill.green { color: var(--green-ink); background: var(--green-soft); border-color: #a7f0d1; }
+  .pill.gold { color: var(--amber-ink); background: var(--amber-soft); border-color: #fde68a; }
+
+  .banner {
+    margin: 30px 0 14px; border-radius: 22px; padding: 22px 26px;
+    background: linear-gradient(120deg, #fff1f3 0%, #fff7ed 100%); border: 1px solid #ffd3da;
+  }
+  .banner h2 { margin: 0 0 6px; font-size: 22px; color: var(--rose-ink); }
+  .banner p { margin: 0; color: #7f1d1d; }
+  .banner.plain { background: linear-gradient(120deg, #eef2ff 0%, #f5f3ff 100%); border-color: #d6dcff; }
+  .banner.plain h2 { color: #3730a3; }
+  .banner.plain p { color: #4338ca; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 22px;
+    padding: 22px 26px; margin: 16px 0; box-shadow: var(--shadow); scroll-margin-top: 70px;
+  }
+  .card .head { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+  .num-badge {
+    flex: none; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center;
+    color: #fff; font-weight: 800; font-size: 16px;
+    background: linear-gradient(135deg, var(--indigo), var(--violet));
+  }
+  .card.has-refusal .num-badge { background: linear-gradient(135deg, var(--rose), var(--saffron)); }
+  .card.has-allowed .num-badge { background: linear-gradient(135deg, var(--green), #10b981); }
+  .card h3 { margin: 0; font-size: 19px; font-weight: 700; }
+  .card p { margin: 8px 0; color: #374151; }
+  .card p.em { color: var(--ink); background: var(--amber-soft); border-radius: 12px; padding: 10px 14px; }
+
+  pre.tbl {
+    margin: 10px 0; padding: 14px 16px; border-radius: 14px; overflow-x: auto;
+    background: #f5f7ff; border: 1px solid #e3e8ff; color: #312e81;
+    font-family: Consolas, "Courier New", monospace; font-size: 13px; line-height: 1.55;
+  }
+
+  .verdict { display: flex; gap: 14px; border-radius: 16px; padding: 16px 18px; margin: 12px 0; border: 1px solid; }
+  .verdict.refused { background: var(--rose-soft); border-color: #ffc2cd; }
+  .verdict.allowed { background: var(--green-soft); border-color: #9be8c8; }
+  .vicon {
+    flex: none; width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center;
+    color: #fff; font-weight: 800; font-size: 18px;
+  }
+  .refused .vicon { background: var(--rose); }
+  .allowed .vicon { background: var(--green); }
+  .vbody { min-width: 0; flex: 1; }
+  .vtop { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .vtag { font-size: 12px; font-weight: 800; letter-spacing: .1em; color: #fff; border-radius: 6px; padding: 3px 9px; }
+  .refused .vtag { background: var(--rose); }
+  .allowed .vtag { background: var(--green); }
+  .vroute { font-weight: 700; font-size: 16px; }
+  .refused .vroute { color: var(--rose-ink); }
+  .allowed .vroute { color: var(--green-ink); }
+  .vcode {
+    display: inline-block; margin-top: 8px; font-family: Consolas, "Courier New", monospace; font-size: 13px; font-weight: 700;
+    background: #fff; color: var(--rose-ink); border: 1px solid #ffc2cd; border-radius: 8px; padding: 3px 10px;
+  }
+  .vtext { margin-top: 8px; color: #374151; font-size: 14px; }
+  .meter { display: flex; gap: 4px; margin-top: 12px; }
+  .meter span { flex: 1; height: 10px; border-radius: 99px; background: #e5e7eb; }
+  .meter span.pass { background: #34d399; }
+  .meter span.fail { background: var(--rose); }
+  .meter span.skip { background: #e5e7eb; }
+  .mlabel { margin-top: 6px; font-size: 12px; font-weight: 600; color: var(--muted); }
+
+  .timeline { margin: 14px 0 0; padding: 0; list-style: none; }
+  .timeline li { position: relative; display: flex; gap: 14px; align-items: center; padding: 7px 0 7px 0; }
+  .timeline li::before {
+    content: ""; position: absolute; left: 15px; top: 0; bottom: 0; width: 2px; background: #e0e7ff;
+  }
+  .timeline li:first-child::before { top: 50%; }
+  .timeline li:last-child::before { bottom: 50%; }
+  .dot {
+    position: relative; z-index: 1; flex: none; width: 32px; height: 32px; border-radius: 50%;
+    display: grid; place-items: center; font-size: 12px; font-weight: 800; color: #fff; background: var(--indigo);
+  }
+  .ev { font-size: 13px; font-weight: 700; border-radius: 8px; padding: 3px 10px; background: var(--indigo-soft); color: #3730a3; }
+  .ev.rose { background: var(--rose-soft); color: var(--rose-ink); }
+  .ev.green { background: var(--green-soft); color: var(--green-ink); }
+  .ev.gold { background: var(--amber-soft); color: var(--amber-ink); }
+  .ev.violet { background: #f3e8ff; color: #6b21a8; }
+  .dot.rose { background: var(--rose); } .dot.green { background: var(--green); }
+  .dot.gold { background: var(--saffron); } .dot.violet { background: var(--violet); }
+  .evd { color: #374151; font-size: 14px; }
+  .summary {
+    margin-top: 18px; border-radius: 16px; padding: 16px 20px; font-weight: 700; font-size: 16px;
+    background: linear-gradient(90deg, var(--green-soft), #e0f2fe); color: var(--green-ink);
+  }
+
+  .state { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 18px; }
+  .spin {
+    width: 42px; height: 42px; margin: 0 auto 14px; border-radius: 50%;
+    border: 5px solid #e0e7ff; border-top-color: var(--indigo); animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .err { white-space: pre-wrap; text-align: left; font-family: Consolas, monospace; font-size: 13px;
+         background: var(--rose-soft); color: var(--rose-ink); border-radius: 14px; padding: 16px; }
+  footer { margin-top: 40px; text-align: center; color: var(--muted); font-size: 13px; }
+
+  @media (max-width: 760px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    h1 { font-size: 38px; }
+    .hero { padding: 26px 22px; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <section class="hero">
+    <span class="kicker">Drunix Hackathon · CHL-7007</span>
+    <h1>Bharat RWA</h1>
+    <p class="tag">Tokenised Indian real assets, with compliance enforced <b>before</b> a transaction is ever ordered.</p>
+    <p class="sub">Every refusal below is never endorsed, never ordered and never enters a block. Nothing to revert, because nothing was ever committed.</p>
+    <div class="cta">
+      <button id="run">Replay demo</button>
+      <span class="hint">Output recorded from a real run of the chaincode domain logic (go run ./cmd/demo).</span>
+    </div>
+  </section>
+
+  <section class="stats">
+    <div class="stat s-rose"><div class="num" id="nref">–</div><div class="lbl">Refusals</div></div>
+    <div class="stat s-green"><div class="num" id="nall">–</div><div class="lbl">Transfers cleared</div></div>
+    <div class="stat s-indigo"><div class="num" id="nev">–</div><div class="lbl">Ledger events</div></div>
+    <div class="stat s-saffron"><div class="num" id="ms">–</div><div class="lbl">Output</div></div>
+  </section>
+
+  <nav class="nav" id="nav" style="display:none"><span class="navlbl">Jump to step</span></nav>
+
+  <div id="out"><div class="state">Press “Replay demo”.</div></div>
+
+  <footer>Bharat RWA · Drunix Hackathon in collaboration with Citi · CHL-7007</footer>
+</main>
+
+<script>
+var RECORDED = "\n==========================================================================\nBHARAT RWA — DEPOSITARY RECEIPT PROGRAMME ON DRUNIX\n==========================================================================\n  Ledger time starts 2026-01-15. All amounts in rupees; the ledger holds paise.\n\n[01] Create the scheme\n--------------------------------------------------------------------------\n  CRE-BLR-001 — Prestige Tech Park, Tower C, Bengaluru\n  1,00,000 units at 10,000.00 each. Lockup 90 days, holder cap 200, concentration cap 25%.\n  Preferred return 8%, promote 20% above the hurdle.\n\n[02] Register investors\n--------------------------------------------------------------------------\n  INV-ALPHA  INSTITUTIONAL  IN   eligibility to 2027-01-15\n  INV-BETA   HNI            IN   eligibility to 2026-03-01\n  INV-GAMMA  HNI            IN   eligibility to 2027-01-15\n  INV-DELTA  RETAIL         IN   eligibility to 2027-01-15\n\n[03] Issue receipts against confirmed custody\n--------------------------------------------------------------------------\n  INV-ALPHA    40,000 units for 40,00,00,000.00   lot CRE-BLR-001-tx0001\n  INV-BETA     20,000 units for 20,00,00,000.00   lot CRE-BLR-001-tx0002\n  INV-GAMMA    15,000 units for 15,00,00,000.00   lot CRE-BLR-001-tx0003\n  Scheme is now ISSUED. Transfers are live.\n\n==========================================================================\nTHE POINT OF THE DEMO: COMPLIANCE RUNS AT ENDORSEMENT\n==========================================================================\n  Each refusal below is a transfer that is never ordered and never\n  enters a block. There is nothing to revert, because the endorsement\n  policy was never satisfied. On a public chain each of these would\n  have been submitted, ordered, paid for, and then reverted.\n\n[04] Transfer inside the 90-day lockup\n--------------------------------------------------------------------------\n  REFUSED   INV-ALPHA → INV-GAMMA, 5,000 units\n            LOCKUP_NOT_SATISFIED\n            only 0 of 5000 units requested have cleared the 90-day lockup\n            refused at predicate 9 of 11 — not endorsed, not ordered, not committed\n\n[05] Transfer from a holder whose KYC attestation has lapsed\n--------------------------------------------------------------------------\n  REFUSED   INV-BETA → INV-GAMMA, 5,000 units\n            ELIGIBILITY_EXPIRED\n            transferor INV-BETA eligibility expired 2026-03-01\n            refused at predicate 4 of 11 — not endorsed, not ordered, not committed\n\n[06] Transfer to a retail investor in an institutional-and-HNI scheme\n--------------------------------------------------------------------------\n  REFUSED   INV-ALPHA → INV-DELTA, 2,000 units\n            INVESTOR_CLASS_NOT_PERMITTED\n            investor class RETAIL is not admitted to scheme CRE-BLR-001\n            refused at predicate 6 of 11 — not endorsed, not ordered, not committed\n\n[07] Transfer that would breach the 25% concentration cap\n--------------------------------------------------------------------------\n  REFUSED   INV-ALPHA → INV-GAMMA, 12,000 units\n            CONCENTRATION_CAP_EXCEEDED\n            transferee would hold 27000 units (27.00%), above the concentration cap of 25.00%\n            refused at predicate 11 of 11 — not endorsed, not ordered, not committed\n\n[08] Transfer below the minimum ticket\n--------------------------------------------------------------------------\n  REFUSED   INV-ALPHA → INV-GAMMA, 400 units\n            BELOW_MINIMUM_TICKET\n            transfer of 400 units is below the minimum ticket of 1000\n            refused at predicate 8 of 11 — not endorsed, not ordered, not committed\n\n[09] Transfer from a frozen holding\n--------------------------------------------------------------------------\n  INV-ALPHA frozen: regulatory direction pending review.\n  REFUSED   INV-ALPHA → INV-GAMMA, 5,000 units\n            HOLDING_FROZEN\n            transferor INV-ALPHA is frozen\n            refused at predicate 2 of 11 — not endorsed, not ordered, not committed\n  INV-ALPHA released.\n\n[10] Renew the lapsed attestation, then retry the same transfer\n--------------------------------------------------------------------------\n  INV-BETA attestation renewed to 2027-04-25 by the re-verification job.\n  ALLOWED   INV-BETA → INV-GAMMA, 5,000 units\n            all 11 predicates passed; transaction endorsed and ordered\n\n[11] Force transfer on a court order\n--------------------------------------------------------------------------\n  3,000 units moved GAMMA → ALPHA under court order.\n  Endorsed by depositary + trustee + registrar. Event on the supervisor's node.\n\n[12] Record an independent valuation, including a markdown\n--------------------------------------------------------------------------\n  NAV published at ₹10,400.00 per unit — up from the ₹10,000.00 issue price.\n  Next cycle: NAV marked down to ₹9,850.00. The event carries markdown=true,\n  which is what triggers the disclosure obligation. A platform that cannot\n  publish a fall in value has not been tested.\n\n[13] Q2 distribution — a normal quarter\n--------------------------------------------------------------------------\n  Period 1 Apr 2026 to 30 Jun 2026, record date 30 Jun 2026\n\n    Gross rental income           1,60,00,000.00\n    Operating expenses           -  24,00,000.00\n    Property management          -   5,00,000.00\n    Debt service                 -          0.00\n    Capex and reserves           -   8,00,000.00\n    Depositary and custody fee   -   4,70,000.00\n    Asset management fee         -  18,75,000.00\n                                 ---------------\n    Distributable                   99,55,000.00\n\n    To holders                      99,55,000.00\n    Manager promote                         0.00\n\n    HOLDER          UNIT-DAYS          GROSS          TDS            NET\n    INV-ALPHA       37,95,000   57,67,820.61         0.00   57,67,820.61\n    INV-BETA        13,50,000   20,51,793.89  2,05,179.38   18,46,614.51\n    INV-GAMMA       14,05,000   21,35,385.50  2,13,538.55   19,21,846.95\n\n    Residual after largest-remainder allocation: 0.00\n    Reconciliation passed: gross less deductions equals holders plus promote,\n    and allocations plus residual equal the holder share. To the paisa.\n    INV-GAMMA's unit-days are the pro-ration at work: Gamma's position\n    changed mid-period, so the entitlement is weighted by days held,\n    computed lot by lot from the register. A closing balance could not\n    tell you when the units arrived.\n    The promote is zero, and that is the correct answer. Distributable\n    income of ₹99.55 lakh did not clear the 8% preferred return on ₹75\n    crore of invested capital, so the manager takes nothing. A waterfall\n    that paid a promote here would be taking the holders' money.\n\n[14] Q3 distribution — a quarter that clears the hurdle\n--------------------------------------------------------------------------\n  Period 1 Jul 2026 to 29 Sep 2026, record date 29 Sep 2026\n\n    Gross rental income           3,20,00,000.00\n    Operating expenses           -  24,00,000.00\n    Property management          -   5,00,000.00\n    Debt service                 -          0.00\n    Capex and reserves           -   8,00,000.00\n    Depositary and custody fee   -   4,70,000.00\n    Asset management fee         -  18,75,000.00\n                                 ---------------\n    Distributable                 2,59,55,000.00\n\n    To holders                    2,07,64,000.01\n    Manager promote                 51,90,999.99\n\n    HOLDER          UNIT-DAYS          GROSS          TDS            NET\n    INV-ALPHA       38,70,000 1,19,04,693.34         0.00 1,19,04,693.34\n    INV-BETA        13,50,000   41,52,800.00  4,15,280.00   37,37,520.00\n    INV-GAMMA       15,30,000   47,06,506.67  4,70,650.66   42,35,856.01\n\n    Residual after largest-remainder allocation: 0.00\n    Reconciliation passed: gross less deductions equals holders plus promote,\n    and allocations plus residual equal the holder share. To the paisa.\n    Now all three tiers run: the preferred return fills first, the\n    catch-up brings the manager to its full promote rate on the whole\n    profit, and the residual splits 80/20. Promote is 20.0% of distributable.\n\n[15] Final register\n--------------------------------------------------------------------------\n  HOLDER            UNITS   SHARE\n  INV-ALPHA        43,000   43.00%\n  INV-BETA         15,000   15.00%\n  INV-GAMMA        17,000   17.00%\n\n==========================================================================\nLEDGER EVENT LOG — WHAT THE SUPERVISOR'S OBSERVER NODE SEES\n==========================================================================\n  Every privileged action and every compliance refusal, in real time,\n  rather than in a quarterly return.\n\n    1  DRIssued                 INV-ALPHA 40,000 units\n    2  DRIssued                 INV-BETA 20,000 units\n    3  DRIssued                 INV-GAMMA 15,000 units\n    4  TransferRejected         LOCKUP_NOT_SATISFIED\n    5  TransferRejected         ELIGIBILITY_EXPIRED\n    6  TransferRejected         INVESTOR_CLASS_NOT_PERMITTED\n    7  TransferRejected         CONCENTRATION_CAP_EXCEEDED\n    8  TransferRejected         BELOW_MINIMUM_TICKET\n    9  HoldingFreezeChanged     INV-ALPHA\n   10  TransferRejected         HOLDING_FROZEN\n   11  HoldingFreezeChanged     INV-ALPHA\n   12  EligibilityRenewed       INV-BETA\n   13  DRTransferred            CRE-BLR-001 INV-BETA\n   14  ForceTransferExecuted    CRE-BLR-001 INV-GAMMA\n   15  ValuationRecorded        CRE-BLR-001\n   16  ValuationRecorded        CRE-BLR-001\n   17  DistributionRecorded     CRE-BLR-001 CRE-BLR-001-DIST-tx0014\n   18  DistributionRecorded     CRE-BLR-001 CRE-BLR-001-DIST-tx0015\n\n  18 events, 6 compliance refusals, distribution reconciled to the paisa.\n\n";
+(function () {
+  var btn = document.getElementById("run");
+  var out = document.getElementById("out");
+  var nav = document.getElementById("nav");
+  var STEP = /^\s*\[(\d+)\]\s*(.*)$/;
+  var VERDICT = /^\s*(REFUSED|ALLOWED)\s+(.*)$/;
+  var TABLEISH = /\S\s{3,}\S/;
+
+  function h(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+
+  function dedent(lines) {
+    var min = 1e9;
+    lines.forEach(function (l) {
+      if (l.trim()) { var m = /^ */.exec(l)[0].length; if (m < min) min = m; }
+    });
+    if (min === 1e9) min = 0;
+    return lines.map(function (l) { return l.slice(min); });
+  }
+
+  function meter(failAt, total, label) {
+    var wrap = h("div");
+    var m = h("div", "meter");
+    for (var i = 1; i <= total; i++) {
+      var cls = "pass";
+      if (failAt > 0) cls = i < failAt ? "pass" : (i === failAt ? "fail" : "skip");
+      m.appendChild(h("span", cls));
+    }
+    wrap.appendChild(m);
+    wrap.appendChild(h("div", "mlabel", label));
+    return wrap;
+  }
+
+  function verdict(kind, head, details) {
+    var box = h("div", "verdict " + kind);
+    box.appendChild(h("div", "vicon", kind === "refused" ? "\u2715" : "\u2713"));
+    var body = h("div", "vbody");
+    var top = h("div", "vtop");
+    top.appendChild(h("span", "vtag", kind === "refused" ? "REFUSED" : "ALLOWED"));
+    top.appendChild(h("span", "vroute", head));
+    body.appendChild(top);
+    var pred = null, passedAll = null;
+    details.forEach(function (d) {
+      var m = /predicate (\d+) of (\d+)/.exec(d);
+      var a = /all (\d+) predicates passed/.exec(d);
+      if (/^[A-Z][A-Z_]{3,}$/.test(d)) body.appendChild(h("div", "vcode", d));
+      else if (m) pred = m;
+      else { if (a) passedAll = a; body.appendChild(h("div", "vtext", d)); }
+    });
+    if (pred) {
+      body.appendChild(meter(parseInt(pred[1], 10), parseInt(pred[2], 10),
+        "Failed check " + pred[1] + " of " + pred[2] + " \u2014 never endorsed, ordered or committed"));
+    } else if (passedAll) {
+      body.appendChild(meter(0, parseInt(passedAll[1], 10),
+        "Passed all " + passedAll[1] + " checks \u2014 endorsed and ordered"));
+    }
+    box.appendChild(body);
+    return box;
+  }
+
+  function renderLines(lines, parent) {
+    var i = 0;
+    while (i < lines.length) {
+      var ln = lines[i];
+      if (/^\s*$/.test(ln)) { i++; continue; }
+      var v = VERDICT.exec(ln);
+      if (v) {
+        i++;
+        var details = [];
+        while (i < lines.length && /^\s{8,}\S/.test(lines[i])) { details.push(lines[i].trim()); i++; }
+        parent.appendChild(verdict(v[1].toLowerCase(), v[2], details));
+        continue;
+      }
+      var tbl = TABLEISH.test(ln.trim());
+      var grp = [];
+      while (i < lines.length && !/^\s*$/.test(lines[i]) && !VERDICT.test(lines[i]) &&
+             TABLEISH.test(lines[i].trim()) === tbl) {
+        grp.push(lines[i]); i++;
+      }
+      if (tbl) {
+        parent.appendChild(h("pre", "tbl", dedent(grp).join("\n")));
+      } else {
+        var text = grp.map(function (g) { return g.trim(); }).join(" ");
+        var em = /promote is zero|Now all three tiers/.test(text);
+        parent.appendChild(h("p", em ? "em" : "", text));
+      }
+    }
+  }
+
+  function splitBody(body) {
+    var lines = body.split("\n");
+    var intro = [], steps = [], cur = null;
+    lines.forEach(function (l) {
+      var m = STEP.exec(l);
+      if (m) { cur = { n: m[1], title: m[2], lines: [] }; steps.push(cur); return; }
+      if (/^\s*-{10,}\s*$/.test(l)) return;
+      if (cur) cur.lines.push(l); else intro.push(l);
+    });
+    return { intro: intro, steps: steps };
+  }
+
+  function stepCard(s) {
+    var card = h("section", "card");
+    card.id = "s" + s.n;
+    var head = h("div", "head");
+    head.appendChild(h("div", "num-badge", s.n));
+    head.appendChild(h("h3", "", s.title));
+    card.appendChild(head);
+    renderLines(s.lines, card);
+    var kind = "";
+    if (card.querySelector(".verdict.refused")) { card.className += " has-refusal"; kind = "red"; }
+    else if (card.querySelector(".verdict.allowed")) { card.className += " has-allowed"; kind = "green"; }
+    else if (/distribution/i.test(s.title) || /valuation/i.test(s.title)) { kind = "gold"; }
+    return { el: card, kind: kind };
+  }
+
+  function evClass(name) {
+    if (/Rejected/.test(name)) return "rose";
+    if (/Distribution/.test(name)) return "green";
+    if (/Valuation/.test(name)) return "gold";
+    if (/Freeze|Eligibility|Force/.test(name)) return "violet";
+    return "";
+  }
+
+  function eventLog(titleText, body) {
+    var card = h("section", "card");
+    var head = h("div", "head");
+    head.appendChild(h("div", "num-badge", "\u2630"));
+    head.appendChild(h("h3", "", "Ledger event log \u2014 what the supervisor\u2019s observer node sees"));
+    card.appendChild(head);
+    var lines = body.split("\n");
+    var prose = [], rows = [], summary = "";
+    lines.forEach(function (l) {
+      var m = /^\s*(\d+)\s+([A-Za-z]+)\s+(.*)$/.exec(l);
+      if (m) rows.push(m);
+      else if (/events,/.test(l)) summary = l.trim();
+      else if (l.trim()) prose.push(l.trim());
+    });
+    if (prose.length) card.appendChild(h("p", "", prose.join(" ")));
+    var ul = h("ul", "timeline");
+    rows.forEach(function (m) {
+      var c = evClass(m[2]);
+      var li = h("li");
+      li.appendChild(h("span", "dot " + c, m[1]));
+      li.appendChild(h("span", "ev " + c, m[2]));
+      li.appendChild(h("span", "evd", m[3]));
+      ul.appendChild(li);
+    });
+    card.appendChild(ul);
+    if (summary) card.appendChild(h("div", "summary", summary));
+    return { el: card, count: rows.length };
+  }
+
+  function countTo(id, target, suffix) {
+    var el = document.getElementById(id);
+    var start = performance.now(), dur = 700;
+    function tick(t) {
+      var p = Math.min(1, (t - start) / dur);
+      el.textContent = Math.round(target * p) + (suffix || "");
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function render(text, seconds) {
+    var parts = text.split(/^={10,}\s*$/m);
+    if (parts.length < 7) {
+      out.textContent = "";
+      var e = h("div", "err", text);
+      out.appendChild(e);
+      return;
+    }
+    out.textContent = "";
+    while (nav.childNodes.length > 1) nav.removeChild(nav.lastChild);
+
+    var pills = [];
+    var evCount = 0;
+
+    var first = splitBody(parts[2]);
+    var intro = h("div", "banner plain");
+    intro.appendChild(h("h2", "", "Bharat RWA \u2014 depositary receipt programme on Drunix"));
+    var lt = first.intro.map(function (l) { return l.trim(); }).filter(Boolean).join(" ");
+    if (lt) intro.appendChild(h("p", "", lt));
+    out.appendChild(intro);
+    first.steps.forEach(function (s) {
+      var c = stepCard(s); out.appendChild(c.el); pills.push({ n: s.n, kind: c.kind });
+    });
+
+    var second = splitBody(parts[4]);
+    var ban = h("div", "banner");
+    ban.appendChild(h("h2", "", "The point of the demo: compliance runs at endorsement"));
+    var bt = second.intro.map(function (l) { return l.trim(); }).filter(Boolean).join(" ");
+    if (bt) ban.appendChild(h("p", "", bt));
+    out.appendChild(ban);
+    second.steps.forEach(function (s) {
+      var c = stepCard(s); out.appendChild(c.el); pills.push({ n: s.n, kind: c.kind });
+    });
+
+    var ev = eventLog(parts[5], parts[6]);
+    out.appendChild(ev.el);
+    evCount = ev.count;
+
+    pills.forEach(function (p) {
+      var a = h("a", "pill " + p.kind, p.n);
+      a.href = "#s" + p.n;
+      nav.appendChild(a);
+    });
+    nav.style.display = "flex";
+
+    var refused = out.querySelectorAll(".verdict.refused").length;
+    var allowed = out.querySelectorAll(".verdict.allowed").length;
+    countTo("nref", refused);
+    countTo("nall", allowed);
+    countTo("nev", evCount);
+    document.getElementById("ms").textContent = "Recorded";
+  }
+
+  function run() {
+    btn.disabled = true;
+    btn.textContent = "Replaying\u2026";
+    out.textContent = "";
+    var st = h("div", "state");
+    st.appendChild(h("div", "spin"));
+    st.appendChild(document.createTextNode("Loading the demo\u2026"));
+    out.appendChild(st);
+    var t0 = performance.now();
+    Promise.resolve(RECORDED)
+      .then(function (text) { render(text, (performance.now() - t0) / 1000); })
+      .catch(function (e) { out.textContent = ""; out.appendChild(h("div", "err", "Could not reach the server: " + e)); })
+      .then(function () { btn.disabled = false; btn.textContent = "Replay demo"; });
+  }
+
+  btn.addEventListener("click", run);
+  run();
+})();
+</script>
+</body>
+</html>
